@@ -1,5 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
+import PersonPage from './pages/PersonPage';
+import { ScheduleProvider } from './contexts/ScheduleContext';
+
 
 function App() {
   return (
@@ -18,6 +21,11 @@ function App() {
           Learn React
         </a>
       </header>
+      <body>
+        <ScheduleProvider>
+          <PersonPage />
+        </ScheduleProvider>
+      </body>
     </div>
   );
 }
