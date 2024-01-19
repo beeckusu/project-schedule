@@ -54,6 +54,18 @@ const ScheduleReducer = (state, action) => {
                     return individual;
                 }),
             };
+        
+        case 'CHANGE_START_DATE':
+            return {
+                ...state,
+                startDate: action.payload,
+            };
+        
+        case 'CHANGE_END_DATE':
+            return {
+                ...state,
+                endDate: action.payload,
+            };
 
         default:
             return state;
