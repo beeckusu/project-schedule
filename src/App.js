@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import PersonPage from './pages/PersonPage';
 import { ScheduleProvider } from './contexts/ScheduleContext';
+import ScheduleOptionsPage from './pages/ScheduleOptionsPage';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
       <body>
         <ScheduleProvider>
           <PersonPage />
+          <ScheduleOptionsPage />
         </ScheduleProvider>
       </body>
     </div>
