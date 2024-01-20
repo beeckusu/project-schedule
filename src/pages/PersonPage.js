@@ -14,7 +14,8 @@ const PersonRow = ({ individual }) => {
     };
 
     const setIndividualShiftCount = (shiftCount, isMax = true) => {
-        dispatch({ type: 'CHANGE_INDIVIDUAL_SHIFT_COUNT', payload: { id: individual.id, shiftCount, isMax } });
+
+        dispatch({ type: 'CHANGE_INDIVIDUAL_SHIFT_COUNT', payload: { id: individual.id, shiftCount: parseInt(shiftCount), isMax } });
     };
 
 
