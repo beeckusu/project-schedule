@@ -38,7 +38,7 @@ const ScheduleReducer = (state, action) => {
                     return individual;
                 }),
             };
-        
+
         case 'CHANGE_INDIVIDUAL_SHIFT_COUNT':
             return {
                 ...state,
@@ -47,24 +47,60 @@ const ScheduleReducer = (state, action) => {
                         return {
                             ...individual,
                             maxShiftCount: action.payload.isMax ? action.payload.shiftCount : Math.max(individual.maxShiftCount, action.payload.shiftCount),
-                            minShiftCount: !action.payload.isMax ?action.payload.shiftCount : Math.min(individual.minShiftCount, action.payload.shiftCount),
+                            minShiftCount: !action.payload.isMax ? action.payload.shiftCount : Math.min(individual.minShiftCount, action.payload.shiftCount),
 
                         };
                     }
                     return individual;
                 }),
             };
-        
+
         case 'CHANGE_START_DATE':
             return {
                 ...state,
                 startDate: action.payload,
             };
-        
+
         case 'CHANGE_END_DATE':
             return {
                 ...state,
                 endDate: action.payload,
+            };
+
+        case 'ADD_DATE_CONDITION':
+            return {
+                ...state,
+                individuals: state.individuals.map((individual) => {
+                    if (individual.id === action.payload.individualId) {
+                        return {
+                            ...individual,
+                            dateConditions: [
+                                ...individual.dateConditions,
+                                {
+                                    id: Math.random(),
+                                    condition: action.payload.condition,
+                                },
+                            ],
+                        };
+                    }
+                    return individual;
+                }),
+            };
+        
+        case 'REMOVE_DATE_CONDITION':
+            return {
+                ...state,
+                individuals: state.individuals.map((individual) => {
+                    if (individual.id === action.payload.individualId) {
+                        return {
+                            ...individual,
+                            dateConditions: individual.dateConditions.filter(
+                                (condition) => condition.id !== action.payload.conditionId
+                            ),
+                        };
+                    }
+                    return individual;
+                }),
             };
 
         default:
@@ -75,7 +111,21 @@ const ScheduleReducer = (state, action) => {
 const ScheduleContext = createContext();
 
 const initialState = {
-    individuals: [],    // List of objects representing individuals
+    individuals: [
+        /**List of objects representing individuals of the form:
+         * {
+         *  id: int,
+         *  name: string,
+         *  minShiftCount: int,
+         *  maxShiftCount: int,
+         *  dateConditions: array of objects of form:
+         *    {
+         *      id: int,
+         *      condition: function of form (date) => boolean
+         *    }
+         * }
+         */
+    ],
     startDate: null,
     endDate: null,
     schedule: [],       // List of objects representing days in the schedule
