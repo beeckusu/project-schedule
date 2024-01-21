@@ -42,6 +42,7 @@ const Calendar = ({ date, onSelectDate }) => {
 
     return (
         <Container>
+            <h1>{date.toLocaleString('default', { month: 'long' })} {date.getUTCFullYear()}</h1>
             <Table className='calendar'>
                 <thead>
                     <tr>

@@ -29,9 +29,9 @@ const SelectedDateOptions = ({ date }) => {
                 <td><Form.Control type='number' min="0"
                     defaultValue={dateOptions ? dateOptions.options.shiftCount : 0}
                     onChange={(e) => setShiftCount(e.target.value)} /></td>
-                    <td><Button onClick={
-                        () => handleOnSetShiftCount()
-                    }>Set</Button></td>
+                <td><Button onClick={
+                    () => handleOnSetShiftCount()
+                }>Set</Button></td>
             </tr>
         </Table>
     );
@@ -42,6 +42,7 @@ const ScheduleOptionsPage = () => {
     const { state, dispatch } = useContext(ScheduleContext);
     const [allShiftCount, setAllShiftCount] = useState(0);
     const [selectedDate, setSelectedDate] = useState(state.startDate);
+    const [calendarDate, setCalendarDate] = useState(state.startDate);
 
     const handleStartDateChange = (date) => {
         dispatch({ type: 'CHANGE_START_DATE', payload: date });
@@ -52,6 +53,13 @@ const ScheduleOptionsPage = () => {
     const handleOnSetAllShifts = (shiftCount) => {
         dispatch({ type: 'SET_GLOBAL_SCHEDULE_SHIFT_COUNT', payload: parseInt(shiftCount) });
     };
+    const handleChangeMonth = (direction) => {
+        if (direction > 0) {
+            setCalendarDate(new Date(calendarDate.getUTCFullYear(), calendarDate.getUTCMonth() + 1, 1));
+        } else {
+            setCalendarDate(new Date(calendarDate.getUTCFullYear(), calendarDate.getUTCMonth() - 1, 1));
+        }
+    }
 
 
     return (
@@ -72,7 +80,13 @@ const ScheduleOptionsPage = () => {
                     <td><Button onClick={(e) => handleOnSetAllShifts(allShiftCount)}>Update</Button></td>
                 </tr>
             </Table>
-            <Calendar date={state.startDate} onSelectDate={(e) => { setSelectedDate(e) }} />
+            <Table>
+                <tr>
+                    <td><Button onClick={(e) => { handleChangeMonth(-1) }}>&lt;</Button></td>
+                    <td><Button onClick={(e) => { handleChangeMonth(1) }}>&gt;</Button></td>
+                </tr>
+            </Table>
+            <Calendar date={calendarDate} onSelectDate={(e) => { setSelectedDate(e) }} />
             <SelectedDateOptions date={selectedDate} />
         </Form>
     );
