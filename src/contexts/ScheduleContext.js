@@ -58,13 +58,13 @@ const ScheduleReducer = (state, action) => {
         case 'CHANGE_START_DATE':
             return {
                 ...state,
-                startDate: action.payload,
+                startDate: new Date(action.payload),
             };
 
         case 'CHANGE_END_DATE':
             return {
                 ...state,
-                endDate: action.payload,
+                endDate: new Date(action.payload),
             };
 
         case 'ADD_DATE_CONDITION':
@@ -102,6 +102,38 @@ const ScheduleReducer = (state, action) => {
                     return individual;
                 }),
             };
+        
+        case 'SET_GLOBAL_SCHEDULE_SHIFT_COUNT':
+            return {
+                ...state,
+                schedule: state.schedule.map((day) => {
+                    return {
+                        ...day,
+                        options: {
+                            ...day.options,
+                            shiftCount: action.payload,
+                        },
+                    };
+                }),
+            };
+        
+        case 'SET_DATE_SHIFT_COUNT':
+
+            return {
+                ...state,
+                schedule: state.schedule.map((day) => {
+                    if (day.date.getTime() === action.payload.date.getTime()) {
+                        return {
+                            ...day,
+                            options: {
+                                ...day.options,
+                                shiftCount: action.payload.shiftCount,
+                            },
+                        };
+                    }
+                    return day;
+                }),
+            };
 
         default:
             return state;
@@ -109,6 +141,24 @@ const ScheduleReducer = (state, action) => {
 }
 
 const ScheduleContext = createContext();
+
+
+const generateInitialSchedule = (startDate, endDate) => {
+    const schedule = [];
+    let currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+        schedule.push({
+            assigned: [],
+            date: new Date(currentDate),
+            options: { shiftCount: 0 },
+        });
+
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return schedule;
+};
 
 const initialState = {
     individuals: [
@@ -126,11 +176,10 @@ const initialState = {
          * }
          */
     ],
-    startDate: null,
-    endDate: null,
-    schedule: [],       // List of objects representing days in the schedule
+    startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    schedule: generateInitialSchedule(new Date(new Date().getFullYear(), new Date().getMonth(), 1), new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)),
 }
-
 const ScheduleProvider = ({ children }) => {
     const [state, dispatch] = useReducer(ScheduleReducer, initialState);
 

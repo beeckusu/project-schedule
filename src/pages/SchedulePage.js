@@ -27,12 +27,6 @@ const SchedulePage = () => {
 
     return (
         <div>
-            {schedule.map((day) => (
-                <div key={day.day}>
-                    <span>{day.day}: </span>
-                    <span>{day.person}</span>
-                </div>
-            ))}
             <button onClick={handleOnSubmit}>Submit</button>
         </div>
     );
