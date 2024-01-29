@@ -14,6 +14,7 @@ const ScheduleReducer = (state, action) => {
                         name: action.payload,
                         minShiftCount: 0,
                         maxShiftCount: 0,
+                        unavailableDates: [],
                     },
                 ],
             };
@@ -132,6 +133,39 @@ const ScheduleReducer = (state, action) => {
                         };
                     }
                     return day;
+                }),
+            };
+        
+        case 'ADD_INDIVIDUAL_UNAVAILABLE_DATE':
+            return {
+                ...state,
+                individuals: state.individuals.map((individual) => {
+                    if (individual.id === action.payload.id && !individual.unavailableDates.some((date) => date.getTime() === action.payload.date.getTime())){
+                        return {
+                            ...individual,
+                            unavailableDates: [
+                                ...individual.unavailableDates,
+                                action.payload.date,
+                            ],
+                        };
+                    }
+                    return individual;
+                }),
+            };
+
+        case 'REMOVE_INDIVIDUAL_UNAVAILABLE_DATE':
+            return {
+                ...state,
+                individuals: state.individuals.map((individual) => {
+                    if (individual.id === action.payload.id) {
+                        return {
+                            ...individual,
+                            unavailableDates: individual.unavailableDates.filter(
+                                (date) => date.getTime() !== action.payload.date.getTime()
+                            ),
+                        };
+                    }
+                    return individual;
                 }),
             };
 
