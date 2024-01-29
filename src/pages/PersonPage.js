@@ -1,9 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { ScheduleContext } from '../contexts/ScheduleContext';
 import { Button, Table } from 'react-bootstrap';
+import IndividualRequirementsPage from './IndividualRequirementsPage';
 
 const PersonRow = ({ individual }) => {
     const { dispatch } = useContext(ScheduleContext);
+    const [showModal, setShowModal] = useState(false);
 
     const handleRemoveIndividual = (id) => {
         dispatch({ type: 'REMOVE_INDIVIDUAL', payload: id });
@@ -43,6 +45,10 @@ const PersonRow = ({ individual }) => {
                 />
             </td>
             <td>
+                <Button variant="primary" onClick={() => setShowModal(!showModal)}>Customizations</Button>
+                <IndividualRequirementsPage individual={individual} showModal={showModal} onClose={() => setShowModal(false)} />
+            </td>
+            <td>
                 <Button onClick={() => handleRemoveIndividual(individual.id)}>Remove</Button>
             </td>
         </tr>
@@ -70,6 +76,7 @@ const PersonPage = () => {
                     <th>Name</th>
                     <th>Min Shifts</th>
                     <th>Max Shifts</th>
+                    <th>Customizations</th>
                     <th></th>
                 </thead>
                 {individuals.map((individual) => (

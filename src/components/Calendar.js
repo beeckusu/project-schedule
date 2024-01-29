@@ -1,22 +1,57 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Container, Table, Button } from 'react-bootstrap';
+import { ScheduleContext } from '../contexts/ScheduleContext';
 import './Calendar.css';
 
 
-const Calendar = ({ date, onSelectDate }) => {
+const Calendar = ({ onSelectDate, selectMultiple = false, initialSelection = null, selectedClass = 'primary' }) => {
 
-    const [selectedDate, setSelectedDate] = useState(date);
+    const getInitialCalendarDays = (dates) => {
+        dates = dates.filter((date) => {
+            return date.getUTCFullYear() === calendarDate.getUTCFullYear() && date.getUTCMonth() === calendarDate.getUTCMonth();
+        }).map((date) => {
+            return date.getUTCDate();
+        });
+        return dates;
+    }
 
-    const handleSelectDate = (day) => {
-        setSelectedDate(day);
-        onSelectDate(new Date(date.getUTCFullYear(), date.getUTCMonth(), day));
+    const { state } = useContext(ScheduleContext);
+
+    const [calendarDate, setCalendarDate] = useState(state.startDate);
+
+    let initialSelectedCalendarDays = initialSelection ? initialSelection : [];
+    initialSelectedCalendarDays = getInitialCalendarDays(initialSelectedCalendarDays);
+    const [selectedDates, setSelectedDates] = useState(initialSelectedCalendarDays);
+
+
+    const handleSelectDate = (day, isSelected) => {
+        if (selectMultiple) {
+            if (!isSelected) {
+                setSelectedDates([...selectedDates, day]);
+            } else {
+                setSelectedDates(selectedDates.filter((date) => date !== day));
+            }
+        } else {
+            setSelectedDates([day]);
+        }
+        
+        onSelectDate(new Date(calendarDate.getUTCFullYear(), calendarDate.getUTCMonth(), day), isSelected);
     };
+    const handleChangeMonth = (direction) => {
+        if (direction > 0) {
+            setCalendarDate(new Date(calendarDate.getUTCFullYear(), calendarDate.getUTCMonth() + 1, 1));
+        } else {
+            setCalendarDate(new Date(calendarDate.getUTCFullYear(), calendarDate.getUTCMonth() - 1, 1));
+        }
+        setSelectedDates(getInitialCalendarDays(initialSelection));
+    }
 
-    let startDay = (date.getUTCDay() - date.getUTCDate() + 1) % 7;
+
+    let startDay = (calendarDate.getUTCDay() - calendarDate.getUTCDate() + 1) % 7;
     if (startDay < 0) {
         startDay += 7;
     }
-    let daysInMonth = new Date(date.getUTCFullYear(), date.getUTCMonth() + 1, 0).getDate();
+    let daysInMonth = new Date(calendarDate.getUTCFullYear(), calendarDate.getUTCMonth() + 1, 0).getDate();
 
     let calendar = [];
 
@@ -42,7 +77,13 @@ const Calendar = ({ date, onSelectDate }) => {
 
     return (
         <Container>
-            <h1>{date.toLocaleString('default', { month: 'long' })} {date.getUTCFullYear()}</h1>
+            <h1>{calendarDate.toLocaleString('default', { month: 'long' })} {calendarDate.getUTCFullYear()}</h1>
+            <Table>
+                <tr>
+                    <td><Button onClick={(e) => { handleChangeMonth(-1) }}>&lt;</Button></td>
+                    <td><Button onClick={(e) => { handleChangeMonth(1) }}>&gt;</Button></td>
+                </tr>
+            </Table>
             <Table className='calendar'>
                 <thead>
                     <tr>
@@ -62,9 +103,9 @@ const Calendar = ({ date, onSelectDate }) => {
                                 <td className='day-cell' key={index}>
                                     {day === null ? null :
                                         <Button
-                                            variant={day === selectedDate ? 'primary' : 'secondary'}
+                                            variant={selectedDates.includes(day) ? selectedClass : 'secondary'}
                                             onClick={() => {
-                                                handleSelectDate(day);
+                                                handleSelectDate(day, selectedDates.includes(day));
                                             }}
                                         >
                                             {day}
